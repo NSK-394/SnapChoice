@@ -1,5 +1,4 @@
 :root {
-    /* Light Mode */
     --primary-blue: #2563EB;
     --primary-blue-rgb: 37, 99, 235;
     --accent-purple: #7C3AED;
@@ -171,7 +170,6 @@ input[type="text"]:focus {
     border-color: var(--primary-blue);
 }
 
-/* Option Cards */
 .options-grid {
     display: flex;
     flex-direction: column;
@@ -279,7 +277,6 @@ input[type="range"] {
     margin-top: 4px;
 }
 
-/* Buttons */
 .actions {
     display: flex;
     flex-direction: column;
@@ -312,7 +309,6 @@ input[type="range"] {
     color: var(--primary-blue);
 }
 
-/* Results Section */
 .results-area {
     margin-top: 48px;
     opacity: 0;
@@ -458,7 +454,6 @@ tr:last-child td {
     color: var(--text-main);
 }
 
-/* Comparison Chart */
 .chart-row {
     display: flex;
     align-items: center;
@@ -502,7 +497,6 @@ tr:last-child td {
     text-align: right;
 }
 
-/* Reasoning */
 .reasoning-box {
     border-left: 4px solid var(--primary-blue);
     padding-left: 16px;
@@ -518,7 +512,6 @@ tr:last-child td {
     margin-top: 40px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .slider-label-row {
         flex-direction: column;

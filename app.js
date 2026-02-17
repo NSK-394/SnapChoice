@@ -1,14 +1,7 @@
-/**
- * SnapChoice — App Logic
- */
-
-// --- State ---
 let optionsCount = 0;
 const container = document.getElementById('options-container');
 
-// --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for shared state in URL
     const sharedData = window.location.hash.substring(1);
     if (sharedData) {
         try {
@@ -25,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initDefault();
     }
 
-    // Event Listeners
     document.getElementById('add-option').addEventListener('click', addOption);
     document.getElementById('get-recommendation').addEventListener('click', runScoring);
     document.getElementById('reset-app').addEventListener('click', resetApp);
@@ -33,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('load-example').addEventListener('click', loadExample);
     document.getElementById('toggle-how-to').addEventListener('click', toggleHowTo);
 
-    // Load History
     updateHistoryUI();
 });
 
@@ -70,8 +61,6 @@ function initDefault() {
     addOption();
 }
 
-// --- UI Actions ---
-
 function restoreState(data) {
     document.getElementById('decision-context').value = data.context || '';
     container.innerHTML = '';
@@ -89,7 +78,6 @@ function addOptionWithData(data) {
     lastCard.querySelector('.importance-slider').value = data.importance;
     lastCard.querySelector('.difficulty-slider').value = data.difficulty;
 
-    // Update labels
     const id = lastCard.id;
     updateSliderValue(`${id}-urgency-val`, data.urgency);
     updateSliderValue(`${id}-importance-val`, data.importance);
@@ -155,8 +143,6 @@ function addOption() {
     `;
 
     container.appendChild(card);
-
-    // Update button visibility
     updateAddButton();
 }
 
@@ -222,18 +208,10 @@ function getOptionsData() {
     }));
 }
 
-// --- Scoring Logic ---
-
-/**
- * SnapScore formula: (0.35 * urgency) + (0.40 * importance) + (0.25 * (11 - difficulty))
- */
 function calculateScore(urgency, importance, difficulty) {
     return (0.35 * urgency) + (0.40 * importance) + (0.25 * (11 - difficulty));
 }
 
-/**
- * Confidence: Decisiveness of the winner
- */
 function calculateConfidence(topScore, secondScore) {
     const gap = ((topScore - secondScore) / topScore) * 100;
     return Math.min(Math.round(gap), 99);
@@ -250,11 +228,10 @@ function runScoring() {
 
     cards.forEach(card => {
         const nameInput = card.querySelector('.option-name').value.trim().substring(0, 60);
-        if (!nameInput && results.length >= 2) return; // Skip empty if we already have 2
+        if (!nameInput && results.length >= 2) return;
 
         const name = nameInput || `Option ${results.length + 1}`;
 
-        // Sanitize and clamp
         const getVal = (selector) => {
             const val = parseInt(card.querySelector(selector).value);
             return isNaN(val) ? 5 : Math.max(1, Math.min(10, val));
@@ -274,7 +251,6 @@ function runScoring() {
         return;
     }
 
-    // Check for identical scores
     const allSame = results.every(r =>
         r.urgency === results[0].urgency &&
         r.importance === results[0].importance &&
@@ -284,16 +260,13 @@ function runScoring() {
         showMessage("Low differentiation — adjust priorities for a better recommendation.", "warning");
     }
 
-    // Sort with deterministic tie-breaker
-    // If scores differ by <= 0.1, use importance -> urgency -> 1/difficulty
     results.sort((a, b) => {
         const scoreDiff = b.score - a.score;
         if (Math.abs(scoreDiff) > 0.1) return scoreDiff;
 
-        // Tie-breaker
         if (b.importance !== a.importance) return b.importance - a.importance;
         if (b.urgency !== a.urgency) return b.urgency - a.urgency;
-        return a.difficulty - b.difficulty; // Lower difficulty wins
+        return a.difficulty - b.difficulty;
     });
 
     if (results.length > 1 && Math.abs(results[0].score - results[1].score) <= 0.2) {
@@ -303,8 +276,6 @@ function runScoring() {
     displayResults(results);
 }
 
-// --- Result Rendering ---
-
 function displayResults(results) {
     const winner = results[0];
     const second = results[1] || { score: 0 };
@@ -312,23 +283,19 @@ function displayResults(results) {
 
     const resultsSection = document.getElementById('results-section');
 
-    // Set Winner Info
     document.getElementById('winner-name').textContent = winner.name;
     document.getElementById('winner-score-badge').textContent = `Score: ${winner.score.toFixed(1)} / 10`;
     document.getElementById('confidence-label').textContent = `Confidence: ${confidence}%`;
 
-    // Animate Confidence Bar
     const bar = document.getElementById('confidence-bar');
     bar.style.width = '0';
 
-    // Render Comparison Chart
     const chart = document.getElementById('comparison-chart');
     const tableBody = document.querySelector('#score-breakdown-table tbody');
     chart.innerHTML = '';
     tableBody.innerHTML = '';
 
     results.forEach((res, idx) => {
-        // Chart
         const row = document.createElement('div');
         row.className = 'chart-row';
         row.innerHTML = `
@@ -340,7 +307,6 @@ function displayResults(results) {
         `;
         chart.appendChild(row);
 
-        // Table
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><strong>${res.name}</strong></td>
@@ -352,16 +318,11 @@ function displayResults(results) {
         tableBody.appendChild(tr);
     });
 
-    // Reasoning
     document.getElementById('reasoning-text').textContent = generateReasoning(winner);
 
-    // Show Section with Animation
     resultsSection.style.display = 'block';
-
-    // Show Share Button
     document.getElementById('share-decision').style.display = 'block';
 
-    // Save to History
     saveToHistory({
         context: document.getElementById('decision-context').value || 'Decision',
         winner: results[0].name,
@@ -369,15 +330,12 @@ function displayResults(results) {
         timestamp: new Date().toISOString()
     });
 
-    // Trigger animations in next frames
     requestAnimationFrame(() => {
         resultsSection.classList.add('visible');
 
         setTimeout(() => {
-            // Fill confidence bar
             bar.style.width = `${confidence}%`;
 
-            // Fill chart bars
             const chartBars = chart.querySelectorAll('.chart-bar');
             results.forEach((res, idx) => {
                 chartBars[idx].style.width = `${(res.score / 10) * 100}%`;
@@ -385,7 +343,6 @@ function displayResults(results) {
         }, 100);
     });
 
-    // Scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -419,38 +376,28 @@ function updateHistoryUI() {
 function generateReasoning(winner) {
     const { name, urgency, importance, difficulty, score } = winner;
 
-    // Template A: Importance is highest
     if (importance >= urgency && importance >= difficulty) {
         return `${name} stands out as your best choice. It scored ${importance}/10 on importance, suggesting it delivers the most long-term value. With an urgency score of ${urgency} and a difficulty of ${difficulty}/10, it's the option most worth your energy right now.`;
     }
 
-    // Template B: Urgency is highest
     if (urgency > importance && urgency >= difficulty) {
         return `Given the time-sensitivity of your options, ${name} rises to the top. Its urgency score of ${urgency}/10 suggests it needs attention now. Paired with an importance score of ${importance}/10, this is your most time-critical and valuable task.`;
     }
 
-    // Template C: Balanced or Difficulty is lowest (Easy)
     return `${name} offers the best overall balance. No single factor dominates, but together — urgency ${urgency}, importance ${importance}, difficulty ${difficulty} — it achieves the strongest composite SnapScore of ${score.toFixed(1)} out of 10.`;
 }
 
 function resetApp() {
-    // Hide results
     const resultsSection = document.getElementById('results-section');
     resultsSection.classList.remove('visible');
 
     setTimeout(() => {
         resultsSection.style.display = 'none';
-
-        // Reset Context
         document.getElementById('decision-context').value = '';
-
-        // Clear and Reset Options
         container.innerHTML = '';
         optionsCount = 0;
         addOption();
         addOption();
-
-        // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 400);
 }
