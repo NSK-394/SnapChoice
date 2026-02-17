@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapChoice — Smart Decision Helper</title>
+    <meta name="description" content="Make better decisions faster with SnapChoice's smart scoring system.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <h1>⚡ SnapChoice</h1>
+            <p class="tagline">Stop overthinking. Start deciding.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="how-it-works" class="collapsible-section">
+            <button id="toggle-how-to" class="btn-text">🤔 How it Works?</button>
+            <div id="how-to-content" class="content-box glass-bg" style="display: none;">
+                <p>SnapChoice uses a weighted scoring formula to rank your options objectively:</p>
+                <ul>
+                    <li><strong>40% Importance</strong>: Long-term value and impact.</li>
+                    <li><strong>35% Urgency</strong>: Time-sensitivity and immediate need.</li>
+                    <li><strong>25% Difficulty</strong>: Complex tasks are penalized to favor quick wins.</li>
+                </ul>
+                <p class="formula-text"><code>SnapScore = (0.35 × U) + (0.40 × I) + (0.25 × (11 − D))</code></p>
+            </div>
+        </section>
+
+        <div id="message-area" class="message-banner" style="display: none;"></div>
+
+        <section class="context-section">
+            <div class="input-header">
+                <label for="decision-context">Your Decision Context</label>
+                <button id="load-example" class="btn-text-small">Load Example Scenario</button>
+            </div>
+            <input type="text" id="decision-context" placeholder="What decision are you making? (optional)"
+                maxlength="100">
+        </section>
+
+        <section id="options-container" class="options-grid">
+            <!-- Option cards will be injected here by app.js -->
+        </section>
+
+        <section class="actions">
+            <button id="add-option" class="btn btn-outline">+ Add Option</button>
+            <button id="get-recommendation" class="btn btn-primary" aria-label="Calculate and show recommendation">⚡ Get
+                My Recommendation</button>
+            <button id="share-decision" class="btn btn-outline" style="display: none;">🔗 Share This Decision</button>
+        </section>
+
+        <section id="history-section" class="history-area" style="display: none;">
+            <h3>Recent Decisions</h3>
+            <div id="history-list" class="history-grid"></div>
+        </section>
+
+        <section id="results-section" class="results-area" style="display: none;">
+            <article class="winner-card">
+                <div class="winner-header">
+                    <span class="trophy">🏆</span>
+                    <h2 id="winner-name"></h2>
+                </div>
+                <div id="winner-score-badge" class="score-badge"></div>
+                <div class="confidence-meter">
+                    <div class="label-row">
+                        <label id="confidence-label"></label>
+                        <span class="info-icon"
+                            title="Confidence shows how far ahead the top option scored compared to the second best.">ⓘ</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="confidence-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="comparison-section">
+                <h3>Detailed Score Breakdown</h3>
+                <div class="table-container">
+                    <table id="score-breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Option</th>
+                                <th>Urg</th>
+                                <th>Imp</th>
+                                <th>Diff</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Breakdown rows injected by app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="comparison-section">
+                <h3>How Options Compare</h3>
+                <div id="comparison-chart" class="chart-container">
+                    <!-- Chart rows will be injected here -->
+                </div>
+            </article>
+
+            <article class="reasoning-section">
+                <h3>Why This Choice?</h3>
+                <div class="reasoning-box">
+                    <p class="reasoning-intro">Here's why SnapChoice recommends this:</p>
+                    <p id="reasoning-text" class="reasoning-content"></p>
+                </div>
+            </article>
+
+            <div class="footer-actions">
+                <button id="reset-app" class="btn btn-outline">🔄 Try Another Decision</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
