@@ -401,3 +401,6 @@ function resetApp() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 400);
 }
+
+window.removeOption = removeOption;
+window.updateSliderValue = updateSliderValue;
